@@ -5,35 +5,37 @@ from plotly.subplots import make_subplots
 from scipy import stats
 import warnings
 
-def calculate_residuals(best_models_dict, X_test_dict, y_test_dict):
-    """
-    Calculate residuals for all models and targets.
-    
-    Parameters:
-        best_models_dict (dict): Dictionary of best models {target: {model_name: model}}
-        X_test_dict (dict): Dictionary of test features {target: X_test}
-        y_test_dict (dict): Dictionary of test target values {target: y_test}
-        
-    Returns:
-        dict: Dictionary of residuals {target: {model_name: residuals}}
-    """
+def calculate_residuals(best_models_dict, X_test_dict, y_test_dict, transformers_dict=None):
+    """Calculate residuals for all models and targets in original scale if transformers provided."""
     residual_data = {}
     
-    # Temporarily suppress the specific OneHotEncoder warning
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UserWarning, 
-                               message="X does not have valid feature names")
+                              message="X does not have valid feature names")
         
         for target, models in best_models_dict.items():
             residual_data[target] = {}
             for model_name, model in models.items():
-                y_pred = model.predict(X_test_dict[target])
-                residuals = y_test_dict[target] - y_pred
+                # Get predictions in transformed space
+                y_pred_log = model.predict(X_test_dict[target])
+                y_test_log = y_test_dict[target]
+                
+                # Calculate residuals (either in original or log space)
+                if transformers_dict and target in transformers_dict:
+                    # Convert to original space first
+                    transformer = transformers_dict[target]
+                    y_pred_orig = transformer.inverse_transform(y_pred_log)
+                    y_test_orig = transformer.inverse_transform(y_test_log)
+                    residuals = y_test_orig - y_pred_orig  # ORIGINAL UNITS
+                else:
+                    # Keep in log space
+                    residuals = y_test_log - y_pred_log
+                
                 residual_data[target][model_name] = residuals
     
     return residual_data
 
-def create_interactive_residual_analysis(best_models_dict, X_test_dict, y_test_dict, targets=None):
+def create_interactive_residual_analysis(best_models_dict, X_test_dict, y_test_dict, targets=None, transformers_dict=None):
     """
     Create an interactive dashboard for residual analysis.
     
@@ -54,7 +56,7 @@ def create_interactive_residual_analysis(best_models_dict, X_test_dict, y_test_d
     model_options = list(best_models_dict[targets[0]].keys())
     
     # Calculate residuals for all models and targets
-    residual_data = calculate_residuals(best_models_dict, X_test_dict, y_test_dict)
+    residual_data = calculate_residuals(best_models_dict, X_test_dict, y_test_dict, transformers_dict)
     
     # Create tabs for different visualization types
     fig = make_subplots(
