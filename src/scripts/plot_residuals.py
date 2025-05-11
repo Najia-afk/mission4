@@ -95,9 +95,19 @@ def create_interactive_residual_analysis(best_models_dict, X_test_dict, y_test_d
             
             # 1. Residuals vs Predicted scatter plot
             idx = len(fig.data)
+
+            # Get x-values in correct scale
+            if transformers_dict and target in transformers_dict:
+                # Use original scale predictions for x-axis
+                transformer = transformers_dict[target]
+                x_values = transformer.inverse_transform(y_pred)
+            else:
+                # Keep in log scale
+                x_values = y_pred
+                
             fig.add_trace(
                 go.Scatter(
-                    x=y_pred, 
+                    x=x_values, 
                     y=residuals,
                     mode='markers',
                     name=f"{model_name} - {target}",
