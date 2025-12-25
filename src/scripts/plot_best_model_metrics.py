@@ -4,10 +4,10 @@ from plotly.subplots import make_subplots
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import pandas as pd
 
-def visualize_model_metrics_comparison(best_models_dict, X_test_dict, y_test_dict, targets, colors=None):
+def visualize_model_metrics_comparison(model_metrics, targets, colors=None):
     """
     Create a visualization comparing performance metrics for multiple models and target variables.
-
+    Uses pre-calculated metrics in original scale.
     """
    # Improved color palette
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f']
@@ -30,19 +30,14 @@ def visualize_model_metrics_comparison(best_models_dict, X_test_dict, y_test_dic
         'r2': []
     } for target in targets}
 
-    # Calculate metrics with improved visualization data
+    # Extract metrics from the provided dictionary
     for target in targets:
-        X_test = X_test_dict[target]
-        y_test = y_test_dict[target]
-        
-        for idx, (model_name, model) in enumerate(best_models_dict[target].items()):
-            y_pred = model.predict(X_test)
-            
+        for model_name, metrics in model_metrics[target].items():
             metrics_data[target]['model_names'].append(model_name)
-            metrics_data[target]['mse'].append(mean_squared_error(y_test, y_pred))
-            metrics_data[target]['rmse'].append(np.sqrt(mean_squared_error(y_test, y_pred)))
-            metrics_data[target]['mae'].append(mean_absolute_error(y_test, y_pred))
-            metrics_data[target]['r2'].append(r2_score(y_test, y_pred))
+            metrics_data[target]['mse'].append(metrics['MSE'])
+            metrics_data[target]['rmse'].append(metrics['RMSE'])
+            metrics_data[target]['mae'].append(metrics['MAE'])
+            metrics_data[target]['r2'].append(metrics['R2'])
 
     # Improved bar plots with distinct colors and better spacing
     for i, target in enumerate(targets):

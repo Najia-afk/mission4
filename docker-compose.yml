@@ -1,0 +1,14 @@
+services:
+  jupyter:
+    build: .
+    container_name: mission4_jupyter
+    ports:
+      - "8884:8888"
+    volumes:
+      - .:/app
+    networks:
+      - mission4_net
+
+networks:
+  mission4_net:
+    driver: bridge

@@ -167,7 +167,7 @@ def clean_and_transform_features(df):
             temp_df[col] = pd.to_numeric(temp_df[col], errors='coerce')
     
     # Remove unnecessary columns
-    cols_to_drop = ['BuildingType', 'PrimaryPropertyType', 'YearBuilt', 'PropertyGFATotal', 'PropertyGFAParking', 'PropertyGFABuilding(s)',
+    cols_to_drop = ['YearBuilt', 'PropertyGFATotal', 'PropertyGFAParking', 'PropertyGFABuilding(s)',
                     'ListOfAllPropertyUseTypes', 'LargestPropertyUseTypeGFA','SecondLargestPropertyUseTypeGFA', 'ThirdLargestPropertyUseTypeGFA',
                     'SiteEUI(kBtu/sf)', 'SiteEUIWN(kBtu/sf)', 'SourceEUI(kBtu/sf)', 'SourceEUIWN(kBtu/sf)', 'SiteEnergyUse(kBtu)', 'SiteEnergyUseWN(kBtu)',
                     'SteamUse(kBtu)', 'Electricity(kWh)', 'Electricity(kBtu)', 'NaturalGas(therms)', 'NaturalGas(kBtu)','GHGEmissionsIntensity',
