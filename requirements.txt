@@ -11,3 +11,5 @@ pyproj
 scipy
 statsmodels
 missingno
+ipywidgets
+tqdm

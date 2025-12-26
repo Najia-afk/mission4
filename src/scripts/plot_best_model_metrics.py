@@ -94,4 +94,5 @@ def visualize_model_metrics_comparison(model_metrics, targets, colors=None):
     fig_metrics.update_yaxes(title_text="MAE", row=2, col=1, title_font=dict(size=14))
     fig_metrics.update_yaxes(title_text="R² Score", row=2, col=2, title_font=dict(size=14))
 
-    fig_metrics.show()
+    print("DEBUG: Returning fig_metrics from visualize_model_metrics_comparison")
+    return fig_metrics
